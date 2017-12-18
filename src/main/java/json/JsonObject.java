@@ -23,17 +23,18 @@ public class JsonObject extends Json {
         }
         Iterator<JsonPair> iterator = jsonPairs.iterator();
         while (iterator.hasNext()) {
-            res += iterator.next().key + ": "+ iterator.next().value;
-            if(iterator.hasNext()) {
-                res+= ", ";
+            JsonPair curPair = iterator.next();
+            res += " '" + curPair.key + "': " + curPair.value.toJson();
+            if (iterator.hasNext()) {
+                res += ", ";
             }
         }
         return res + "}";
     }
 
     public void addAll(JsonPair... jsonPairs) {
-        for(JsonPair jsonPair : jsonPairs) {
-            if ( !this.jsonPairs.contains(jsonPair)) {
+        for (JsonPair jsonPair : jsonPairs) {
+            if (!this.jsonPairs.contains(jsonPair)) {
                 this.jsonPairs.add(jsonPair);
             }
         }
@@ -41,17 +42,31 @@ public class JsonObject extends Json {
 
 
     public void add(JsonPair jsonPair) {
-        if(!this.jsonPairs.contains(jsonPair)) {
+        if (!this.jsonPairs.contains(jsonPair)) {
             this.jsonPairs.add(jsonPair);
         }
     }
 
     public Json find(String name) {
+        for (JsonPair jsonPair : jsonPairs) {
+            if (jsonPair.key.equals(name)) {
+                return jsonPair.value;
+            }
+        }
         return null;
     }
 
     public JsonObject projection(String... names) {
-        // ToDo
-        return null;
+        JsonObject jsonObject = new JsonObject();
+        for (String name : names) {
+            Iterator<JsonPair> iterator = jsonPairs.iterator();
+            while(iterator.hasNext()) {
+                JsonPair curPair = iterator.next();
+                if(curPair.key.equals(name)) {
+                    jsonObject.add(curPair);
+                }
+            }
+        }
+        return jsonObject;
     }
 }
